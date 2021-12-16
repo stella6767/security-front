@@ -22,21 +22,22 @@ import GoogleLogin from "react-google-login";
 //그래서 보통 보안을 이유로 JWT Token은 유효기간을 짧게 잡아요.
 //1시간이라고 치면 1시간이 지나면 세션이 풀리는 거잖아요. 세션 같은 경우에는 사용자가 요청을 세션 시간을 1시간으로 잡아도 그 안에 10분전에 동일 세션 사용자로부터 요청이 오면 다시 1시간이 연장된단 말이에요.
 //근데 JWT는 얄짤 없어요. 무조건 기간 지나면 만료되요.만료되면 다시 로그인해야겠죠. 근데 이러면 사용자 경험, UX 측면에서 경험이 안 좋아요. 근데 UX 를 위해서, 토큰 유효기간을 길게 잡으면 보안에 취약하단 말이요
-//근데 우리가 보통 구글 같은 경우에 로그인하면, 내일 아침에 일어나서 접속해도 여전히 접속중인 상태잖아요. \
+//근데 우리가 보통 구글 같은 경우에 로그인하면, 내일 아침에 일어나서 접속해도 여전히 접속중인 상태잖아요.
+//
 
 function App() {
   //dispath 선언
   const dispatch = useDispatch();
 
   const clientId =
-    "65042798307-j7fa7o7d22m1nthjh32jh5blfg4551p5.apps.googleusercontent.com";
+    "65042798307-uk0kirscjeigolpht40dj4jtehofamel.apps.googleusercontent.com";
 
   const { principal } = useSelector(({ auth }) => ({
     principal: auth.principal,
   }));
 
   const googleLogin = (response) => {
-    console.log("??");
+    console.log("??", response);
     dispatch(googleAction(response));
   };
 
@@ -113,7 +114,7 @@ function App() {
       <div>{principal == null ? "ss" : principal.username}</div>
 
       <GoogleLogin
-        clientId={clientId}
+        clientId="65042798307-4l34gqs06obksgpveme32d6njgpbi7l0.apps.googleusercontent.com"
         buttonText="Google Login"
         onSuccess={googleLogin}
         onFailure={googleLogin}
