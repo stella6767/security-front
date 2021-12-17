@@ -5,6 +5,10 @@ export const login = (data) => client.post("/mylogin", JSON.stringify(data));
 export const sociaLogin = (data) =>
   client.post("/socialLogin", JSON.stringify(data));
 
+export const logout = (data) => client.get("/mylogout"); //자동로그인 할 게요.
+
+export const loadUser = (data) => client.get("/loadUser");
+
 //어제 여러분 한 거 좀 봤는데, 제 생각보다 잘 하시는 것 같아서 세세한 설명 같은 거 다 넘어갈게요.
 
 //이거는 간단하게 저희가 구현한 거고 이론적인 걸 조금 얘기할게요.

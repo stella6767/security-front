@@ -1,10 +1,19 @@
 import "./App.css";
 import "antd/dist/antd.css";
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox, Layout } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { googleAction, loginAction } from "./reducer/auth";
-import { useState } from "react";
+import {
+  googleAction,
+  loadUserAction,
+  loginAction,
+  logoutAction,
+} from "./reducer/auth";
+import { useEffect, useState } from "react";
 import GoogleLogin from "react-google-login";
+import { Content } from "antd/lib/layout/layout";
+import { adminGetAction, userFindAction } from "./reducer/user";
+import { loadUser } from "./lib/api/auth";
+import useUpdateEffect from "./lib/useUpdateEffect";
 
 //통신 준비 끝나거고, 구조 다 잡혔으니까, 여기서 5분만 쉬고 진행해도 도;ㄹ
 //저 왔습니다.
@@ -29,25 +38,47 @@ function App() {
   //dispath 선언
   const dispatch = useDispatch();
 
-  const clientId =
-    "65042798307-uk0kirscjeigolpht40dj4jtehofamel.apps.googleusercontent.com";
-
-  const { principal } = useSelector(({ auth }) => ({
+  const { principal, loginDone, logoutDone } = useSelector(({ auth }) => ({
     principal: auth.principal,
+    loginDone: auth.loginDone,
+    logoutDone: auth.logoutDone,
   }));
 
   const googleLogin = (response) => {
-    console.log("??", response);
+    console.log("구글 ResourceServer로부터 먼저 정보를 받아온다", response);
     dispatch(googleAction(response));
   };
 
-  const [random, setRendom] = useState(null); // 저희가 컴포넌트 내부에서 상태를 선언한 거죠?
+  useEffect(() => {
+    console.log("맨 처음 랜더링 될 때 실행");
+    dispatch(loadUserAction());
+  }, []);
+
+  // useUpdateEffect(() => {
+  //   //그러면 얘는logoutDone 변경될 때만 싱행될거에요.
+
+  //   console.log("실행되는 시점");
+
+  //   if (logoutDone) {
+  //     console.log("???");
+  //     localStorage.clear();
+  //   }
+
+  //   // localStorage.clear();
+  // }, [logoutDone]);
+
+  useEffect(() => {
+    console.log("실행되는 시점2");
+    //우리가 기대하는 거는 상태값이 변했을 때만 실행되는 걸 저희는 기대했는데,
+    //상태값이 변할 때도 실행되지만 일단 무조건 첫 랜더링 될 때 무조건 실행됨/
+  }, [logoutDone]);
 
   //react는 기본적으로 데이터원웨이 바인딩이에요. 한 방향으로만 흘러요. 데이터가, 그래서 자식이 부모에게 데이터를 넘겨주거나,
   //형제 컴포넌트에게 넘겨주는 걸 할 수가 없어요.
 
   const onFinish = (values) => {
     console.log("Success:", values);
+    console.log("Login 순서 1");
 
     dispatch(loginAction(values)); //다 갖다 쓸 수 있다.
   };
@@ -55,71 +86,100 @@ function App() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  //웹 브라우저를 속이는
+  const userAuthorities = () => {
+    dispatch(userFindAction());
+  };
+
+  const adminAuthorities = () => {
+    dispatch(adminGetAction());
+  };
+
+  const logout = () => {
+    dispatch(logoutAction());
+  };
 
   return (
     <>
-      <Form
-        name="basic"
-        labelCol={{
-          span: 8,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: "Please input your username!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+      <Layout>
+        <Content style={{ padding: "50px 50px" }}>
+          {loginDone === false && (
+            <Form
+              name="basic"
+              labelCol={{
+                span: 8,
+              }}
+              wrapperCol={{
+                span: 16,
+              }}
+              initialValues={{
+                remember: true,
+              }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+            >
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your username!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your password!",
-            },
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
 
-        <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Button type="primary" htmlType="submit">
-            Submit
+              <Form.Item
+                wrapperCol={{
+                  offset: 8,
+                  span: 16,
+                }}
+              >
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
+          {/* https://velog.io/@devky/TIL-Javascript-%EC%B5%9C%EC%8B%A0-%EB%AC%B8%EB%B2%95-%EC%A0%95%EB%A6%AC     optional chaining */}
+          <div>로그인 유저: {principal?.username}</div>
+
+          <GoogleLogin
+            clientId="65042798307-4l34gqs06obksgpveme32d6njgpbi7l0.apps.googleusercontent.com"
+            buttonText="Google Login"
+            onSuccess={googleLogin}
+            onFailure={googleLogin}
+            cookiePolicy={"single_host_origin"}
+          />
+
+          <Button type="primary" onClick={userAuthorities}>
+            유저 권한이 필요한 요청
           </Button>
-        </Form.Item>
-      </Form>
 
-      <div>{principal == null ? "ss" : principal.username}</div>
-
-      <GoogleLogin
-        clientId="65042798307-4l34gqs06obksgpveme32d6njgpbi7l0.apps.googleusercontent.com"
-        buttonText="Google Login"
-        onSuccess={googleLogin}
-        onFailure={googleLogin}
-        cookiePolicy={"single_host_origin"}
-      />
+          <Button type="primary" onClick={adminAuthorities}>
+            관리자 권한이 필요한 요청
+          </Button>
+          <Button type="primary" onClick={logout}>
+            로그아웃
+          </Button>
+        </Content>
+      </Layout>
     </>
   );
 }
