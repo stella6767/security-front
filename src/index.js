@@ -1,18 +1,17 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-
-import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "./store/store";
+import reactDom from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 
 const store = configureStore();
 
-ReactDOM.render(
+reactDom.render(
   <Provider store={store}>
-    <BrowserRouter>
+    <BrowserRouter basename="">
       <App />
     </BrowserRouter>
     ,

@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const client = axios.create();
-const client2 = axios.create();
+
+//const client2 = axios.create();
 
 //client.defaults.baseURL = "http://localhost:8080/";
 
@@ -10,6 +11,7 @@ client.defaults.headers.post["Content-Type"] =
 
 client.defaults.headers.common["Authorization"] = localStorage.getItem("jwt");
 
+//client.defaults.baseURL = "http://localhost:8080";
 //
 
 client.interceptors.request.use(
@@ -17,7 +19,6 @@ client.interceptors.request.use(
     console.log("Starting Request", JSON.stringify(request, null, 2));
 
     //console.log("request", request);
-
     return request;
   },
   (error) => {

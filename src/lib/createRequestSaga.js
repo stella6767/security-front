@@ -10,8 +10,8 @@ export const createRequestActionTypes = (type) => {
 };
 
 export function createRequestSaga(type, request) {
-  const SUCCESS = type.replace(/REQUEST/g, "SUCCESS");
-  const FAILURE = type.replace(/REQUEST/g, "FAILURE");
+  const SUCCESS = type.replace(/REQUEST/g, "SUCCESS"); // TEST_SUCCESS
+  const FAILURE = type.replace(/REQUEST/g, "FAILURE"); //TEST_FAILURE
 
   //SUCCESS = LOGIN_SUCCEESS //
 
@@ -24,7 +24,7 @@ export function createRequestSaga(type, request) {
       const response = yield call(request, action.payload); //call 은 사가 문법인데,
       //async await 랑 같다고 생각하면 되요.  저희 시큐리티 서버가 주는 response 를 받아와요.
 
-      console.log("여기서 직접 확인", response);
+      console.log(" 순서 5 여기서 직접 확인", response);
 
       const token = response.headers.authorization;
       console.log("token", token);
@@ -43,7 +43,7 @@ export function createRequestSaga(type, request) {
     } catch (e) {
       const errorData = e.response.data;
 
-      console.error("error data", errorData);
+      console.error("error data", e);
 
       yield put({
         type: FAILURE,

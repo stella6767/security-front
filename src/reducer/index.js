@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import { all } from "@redux-saga/core/effects";
 import auth, { authSaga } from "./auth";
 import user, { userSaga } from "./user";
+import test, { testSaga } from "./test";
 import loading from "./loading";
 
 //redux를 쓸 떼 단점이, reducer 자체가 순수함수여야 되요. 그래서 중간에 어떤 처리
@@ -12,10 +13,11 @@ const rootReducer = combineReducers({
   loading,
   auth,
   user,
+  test,
 });
 
 export function* rootSaga() {
-  yield all([authSaga(), userSaga()]);
+  yield all([authSaga(), userSaga(), testSaga()]);
 }
 
 export default rootReducer;
