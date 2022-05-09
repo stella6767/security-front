@@ -3,7 +3,6 @@ import axios from "axios";
 const client = axios.create();
 
 //const client2 = axios.create();
-
 //client.defaults.baseURL = "http://localhost:8080/";
 
 client.defaults.headers.post["Content-Type"] =
@@ -11,14 +10,15 @@ client.defaults.headers.post["Content-Type"] =
 
 client.defaults.headers.common["Authorization"] = localStorage.getItem("jwt");
 
-//client.defaults.baseURL = "http://localhost:8080";
-//
+client.defaults.baseURL = process.env.REACT_APP_URL;
+//client.defaults.baseURL = "http://localhost:8085";
 
 client.interceptors.request.use(
   (request) => {
-    console.log("Starting Request", JSON.stringify(request, null, 2));
-
+    //console.log("Starting Request", JSON.stringify(request, null, 2));
     //console.log("request", request);
+
+    console.log("순서5");
     return request;
   },
   (error) => {
@@ -30,13 +30,14 @@ client.interceptors.request.use(
 
 client.interceptors.response.use(
   (response) => {
-    console.log("Starting Response", JSON.stringify(response, null, 2));
+    //console.log("Starting Response", JSON.stringify(response, null, 2));
+
+    console.log("순서 6");
 
     return response;
   },
   (error) => {
     console.log("error", error);
-
     return Promise.reject(error);
   }
 );
